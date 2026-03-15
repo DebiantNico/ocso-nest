@@ -1,0 +1,68 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { v4 as uuid } from 'uuid';
+
+@Injectable()
+export class ProductsService {
+private products = [
+    {
+      productId: uuid(),
+      productName: 'Sabritas Normal 48g',
+      price: 29,
+      countSeal: 3,
+      provider: uuid()
+    },
+    {
+      productId: uuid(),
+      productName: 'Coca-Cola 600ml',
+      price: 25,
+      countSeal: 2,
+      provider: uuid()
+    }, 
+    {
+      productId: uuid(),
+      productName: 'Agua Ciel 1L',
+      price: 25,
+      countSeal: 2,
+      provider: uuid()
+    }
+]
+
+  create(createProductDto: CreateProductDto) {
+    createProductDto.productId = uuid();
+    this.products.push(createProductDto);
+    return createProductDto;
+    }
+
+    findAll() {
+    return this.products;
+    }
+
+    findOne(id: string) {
+    const productFound = this.products.find(product => product.productId === id);
+    if (!productFound) throw new NotFoundException()
+      return productFound;
+    }    
+    
+    findByProvider(id: string) {
+      const prooductsFound = this.products.filter(product => product.provider === id);
+      if (prooductsFound.length === 0) throw new NotFoundException()
+      return prooductsFound;
+        }
+
+    update(id: string, updateProductDto: UpdateProductDto) {
+    let product = this.findOne(id)
+      product ={
+        ...product,
+        ...updateProductDto
+      }
+    
+    }
+
+    remove(id: string) {
+    const { productId } = this.findOne(id);
+    this.products = this.products.filter((product) => product.productId !== productId);
+    return this.products;
+    }
+  }
