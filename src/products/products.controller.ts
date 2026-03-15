@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -8,7 +8,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
+  create(@Body(new ValidationPipe()) createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
@@ -20,6 +20,11 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.productsService.findOne(id);
+  }
+
+  @Get('provider/:id')
+  findByProvider(@Param('id', new ParseUUIDPipe({version: '4'})) id: string) {
+    return this.productsService.findByProvider(id);
   }
 
   @Patch(':id')

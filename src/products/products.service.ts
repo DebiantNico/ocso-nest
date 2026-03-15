@@ -30,10 +30,12 @@ private products = [
 ]
 
   create(createProductDto: CreateProductDto) {
-    createProductDto.productId = uuid();
+    if (!createProductDto.productId) {
+      createProductDto.productId = uuid();
+    }
     this.products.push(createProductDto);
     return createProductDto;
-    }
+  }
 
     findAll() {
     return this.products;
@@ -53,7 +55,14 @@ private products = [
 
     update(id: string, updateProductDto: UpdateProductDto) {
     let product = this.findOne(id)
-      product ={
+    this.products = this.products.map((product) => {
+      if (product.productId === id) return {
+      ...product,
+      ...updateProductDto,
+    }
+    return product;
+  })
+      return {
         ...product,
         ...updateProductDto
       }
