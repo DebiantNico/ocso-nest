@@ -1,77 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { v4 as uuid } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
-private products = [
-    {
-      productId: uuid(),
-      productName: 'Sabritas Normal 48g',
-      price: 29,
-      countSeal: 3,
-      provider: uuid()
-    },
-    {
-      productId: uuid(),
-      productName: 'Coca-Cola 600ml',
-      price: 25,
-      countSeal: 2,
-      provider: uuid()
-    }, 
-    {
-      productId: uuid(),
-      productName: 'Agua Ciel 1L',
-      price: 25,
-      countSeal: 2,
-      provider: uuid()
-    }
-]
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
 
   create(createProductDto: CreateProductDto) {
-    if (!createProductDto.productId) {
-      createProductDto.productId = uuid();
-    }
-    this.products.push(createProductDto);
-    return createProductDto;
+    const product = this.productRepository.create(createProductDto);
+    return this.productRepository.save(product); 
   }
 
-    findAll() {
-    return this.products;
-    }
+  findAll() {
+    return this.productRepository.find();
+  }
 
-    findOne(id: string) {
-    const productFound = this.products.find(product => product.productId === id);
-    if (!productFound) throw new NotFoundException()
-      return productFound;
-    }    
-    
-    findByProvider(id: string) {
-      const prooductsFound = this.products.filter(product => product.provider === id);
-      if (prooductsFound.length === 0) throw new NotFoundException()
-      return prooductsFound;
-        }
-
-    update(id: string, updateProductDto: UpdateProductDto) {
-    let product = this.findOne(id)
-    this.products = this.products.map((product) => {
-      if (product.productId === id) return {
-      ...product,
-      ...updateProductDto,
-    }
+  async findOne(id: string) {
+    const product = await this.productRepository.findOneBy({
+      productId: id,
+    });
+    if (!product) throw new NotFoundException('Producto no encontrado');
     return product;
-  })
-      return {
-        ...product,
-        ...updateProductDto
-      }
-    
-    }
-
-    remove(id: string) {
-    const { productId } = this.findOne(id);
-    this.products = this.products.filter((product) => product.productId !== productId);
-    return this.products;
-    }
   }
+
+  async findByProvider(id: string) {
+    const productsFound = await this.productRepository.find({
+      where: {
+        provider: id,
+      },
+    });
+    if (productsFound.length === 0) throw new NotFoundException('No se encontraron productos para este proveedor');
+    return productsFound;
+  }
+
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    const productToUpdate = await this.productRepository.preload({
+      productId: id,
+      ...updateProductDto,
+    });
+
+    if (!productToUpdate) throw new NotFoundException('Producto no encontrado para actualizar');
+
+    return this.productRepository.save(productToUpdate);
+  }
+
+  async remove(id: string) {
+    const product = await this.findOne(id);
+    await this.productRepository.delete(id);
+    return product;
+  }
+}
