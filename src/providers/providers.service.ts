@@ -34,7 +34,6 @@ export class ProvidersService {
   }
 
   findOneByName(name: string) {
-
     const provider = this.providerRepository.findBy({
       providerName: Like(`%${name}%`),
     });
