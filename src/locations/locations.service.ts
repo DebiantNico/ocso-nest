@@ -11,8 +11,9 @@ export class LocationsService {
     @InjectRepository(Location)
     private locationRepository: Repository<Location>
   ) {}
-  create(createLocationDto: CreateLocationDto) {
-    return this.locationRepository.save(createLocationDto);
+  async create(createLocationDto: CreateLocationDto) {
+    const location = this.locationRepository.create(createLocationDto);
+    return this.locationRepository.save(location);
   }
 
   findAll() {

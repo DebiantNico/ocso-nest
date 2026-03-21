@@ -1,8 +1,8 @@
-import { IsEmail, IsString, MaxLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, MaxLength, IsInt } from "class-validator";
 
 export class CreateEmployeeDto {
     @IsString()
-    @MaxLength(30)
+    @MaxLength(50)
     name: string;
 
     @IsString()
@@ -10,10 +10,20 @@ export class CreateEmployeeDto {
     lastName: string;
 
     @IsString()
-    @MaxLength(10)
+    @MaxLength(15)
     phoneNumber: string;
 
     @IsString()
     @IsEmail()
     email: string;
+
+    @IsString() 
+    @IsOptional() 
+    photoUrl?: string;
+
+    @IsInt() 
+    locationId: number; 
+    
+    @IsString() 
+    userId: string;
 }

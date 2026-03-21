@@ -6,6 +6,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Roles } from './decorators/roles.decorators';
+
 
 @Injectable()
 export class AuthService {
@@ -28,11 +31,9 @@ export class AuthService {
       }
     });
 
-    if (!user) throw new UnauthorizedException("No estas autorizado");
-
+    if (!user) throw new UnauthorizedException();
     const match = bcrypt.compareSync(loginUserDto.userPassword, user.userPassword);
-
-    if (!match) throw new UnauthorizedException("No estas autorizado");
+    if (!match) throw new UnauthorizedException();
 
     const payload = {
       userEmail: user.userEmail,
@@ -40,7 +41,17 @@ export class AuthService {
     };
 
     const token = this.jwtService.sign(payload);
-
     return token;
   }
+
+  async updateUser(userEmail: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.preload({
+    userEmail: userEmail,
+    ...updateUserDto
+  });
+  
+  if (!user) throw new UnauthorizedException("Usuario no encontrado");
+  
+  return await this.userRepository.save(user);
+}
 }
