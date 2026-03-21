@@ -21,7 +21,7 @@ export class RegionsService {
     return this.regionRepository.find();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const region = await this.regionRepository.findOneBy({
       regionId: id,
     });
@@ -29,7 +29,7 @@ export class RegionsService {
     return region;
   }
 
-  async update(id: string, updateRegionDto: UpdateRegionDto) {
+  async update(id: number, updateRegionDto: UpdateRegionDto) {
     const regionToUpdate = await this.regionRepository.preload({
       regionId: id,
       ...updateRegionDto,
@@ -38,7 +38,7 @@ export class RegionsService {
     return this.regionRepository.save(regionToUpdate);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await this.regionRepository.delete({
       regionId: id,
     });
