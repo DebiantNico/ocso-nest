@@ -10,7 +10,7 @@ export class LocationsService {
     private locationRepository: Repository<Location>
   ) {}
   create(createLocationDto: CreateLocationDto) {
-    return this.locationRepository.save(createLocationDto);';
+    return this.locationRepository.save(createLocationDto);
   }
 
   findAll() {
