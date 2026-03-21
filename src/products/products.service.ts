@@ -12,16 +12,26 @@ export class ProductsService {
     private productRepository: Repository<Product>,
   ) {}
 
-  create(createProductDto: CreateProductDto) {
-    const product = this.productRepository.create(createProductDto);
+create(createProductDto: CreateProductDto) {
+    const { provider, ...createData } = createProductDto;
+    const product = this.productRepository.create({
+      ...createData,
+      ...(provider && { provider: { providerId: provider } }),
+    });
     return this.productRepository.save(product); 
   }
 
+
   findAll() {
-    return this.productRepository.find();
+    return this.productRepository.find({
+      loadEagerRelations: true,
+      relations: {
+        provider: true,
+      },
+    });
   }
 
-  async findOne(id: string) {
+async findOne(id: string) {
     const product = await this.productRepository.findOneBy({
       productId: id,
     });
@@ -29,26 +39,19 @@ export class ProductsService {
     return product;
   }
 
-  async findByProvider(id: string) {
-    const productsFound = await this.productRepository.find({
-      where: {
-        provider: id,
-      },
-    });
-    if (productsFound.length === 0) throw new NotFoundException('No se encontraron productos para este proveedor');
-    return productsFound;
+  findByProvider(id: string) {
+    return this.productRepository.findBy({
+      provider: {
+        providerId: id,
+      }
+    })
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
-    const productToUpdate = await this.productRepository.preload({
-      productId: id,
-      ...updateProductDto,
-    });
-
-    if (!productToUpdate) throw new NotFoundException('Producto no encontrado para actualizar');
-
-    return this.productRepository.save(productToUpdate);
-  }
+async update(id: string, updateProductDto: UpdateProductDto) {
+  const product = await this.findOne(id);  
+  Object.assign(product, updateProductDto);
+  return this.productRepository.save(product);
+}
 
   async remove(id: string) {
     const product = await this.findOne(id);
