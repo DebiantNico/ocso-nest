@@ -2,7 +2,9 @@ import { Controller, Post, Body, Patch, Param} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -18,7 +20,7 @@ export class AuthController {
   }
 
 
-  
+
   @Patch('/:email')
 updateUser(
   @Param('email') userEmail: string, 

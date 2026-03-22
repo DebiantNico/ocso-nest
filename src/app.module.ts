@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { EmployeesModule } from './employees/employees.module';
 import { ProductsModule } from './products/products.module';
 import { ProvidersModule } from './providers/providers.module';
@@ -16,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
+      //dropSchema: true,
       type: 'postgres',
       host: process.env.HOST,
       port: process.env.PORT ? parseInt(process.env.PORT!, 10): 5432,
@@ -34,7 +33,7 @@ import { AuthModule } from './auth/auth.module';
     RegionsModule,
     AuthModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

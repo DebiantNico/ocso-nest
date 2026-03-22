@@ -15,12 +15,8 @@ userPassword: string;
 default: ['Employee'] 
 })
 userRoles: string[];
-@OneToOne(() => Manager, (manager) => manager.user, { 
-    eager: true 
-})
+@OneToOne(() => Manager)
 manager: Manager;
-@OneToOne(() => Employee, (employee) => employee.user, { 
-    eager: true 
-})
+@OneToOne(() => Employee)
 employee: Employee;
 }

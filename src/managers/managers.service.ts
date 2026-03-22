@@ -13,7 +13,7 @@ export class ManagersService {
   ) {}
 
   create(createManagerDto: CreateManagerDto) {
-    const manager = this.managerRepository.create(createManagerDto);
+    const manager = this.managerRepository.create(createManagerDto as any);
     return this.managerRepository.save(manager);
   }
 
@@ -32,9 +32,11 @@ export class ManagersService {
   async update(id: string, updateManagerDto: UpdateManagerDto) {
     const managerToUpdate = await this.managerRepository.preload({
       managerId: id,
-      ...updateManagerDto,
+      ...updateManagerDto as any,
     });
-    if (!managerToUpdate) throw new NotFoundException('Manager not found');
+    if (!managerToUpdate) {throw new NotFoundException();
+      
+    }
     return this.managerRepository.save(managerToUpdate);
   }
 

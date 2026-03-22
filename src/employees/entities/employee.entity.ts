@@ -7,8 +7,8 @@ export class Employee {
     @PrimaryGeneratedColumn('uuid')
     employeeId: string;
 
-    @OneToOne(() => User, (user) => user.employee)
-    @JoinColumn({ name: "userId" })
+    @OneToOne(() => User)
+    @JoinColumn()
     user: User;
 
     @Column({ type: 'text' })
@@ -25,6 +25,7 @@ export class Employee {
 
     @Column({ type: 'text', nullable: true })
     employeePhoto: string;
+
     @ManyToOne(() => Location, (location) => location.employees)
     @JoinColumn({
     name: "locationId"

@@ -4,11 +4,9 @@ import { AuthGuard } from "../guards/auth.guard";
 import { RolesGuard } from "../guards/roles.guard";
 import { ROLES } from "../constants/roles.constants";
 
-
-export const Auth = (...roles: ROLES[]) => {  
-    Roles.push(ROLES.ADMIN);
-    return applyDecorators(
-    Roles(roles),
+export function Auth(...roles: ROLES[]) {
+  return applyDecorators(
+    Roles([ROLES.ADMIN, ...roles] as any), 
     UseGuards(AuthGuard, RolesGuard)
   );
 }
