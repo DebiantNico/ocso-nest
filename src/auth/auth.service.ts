@@ -31,13 +31,16 @@ export class AuthService {
       }
     });
 
-    if (!user) throw new UnauthorizedException();
-    const match = bcrypt.compareSync(loginUserDto.userPassword, user.userPassword);
-    if (!match) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException("No estas autorizado");
+    const match = bcrypt.compareSync(
+      loginUserDto.userPassword, 
+      user.userPassword);
+    if (!match) throw new UnauthorizedException("No estas autorizado");
 
     const payload = {
       userEmail: user.userEmail,
-      userPassword: user.userPassword
+      userPassword: user.userPassword,
+      userRoles: user.userRoles
     };
 
     const token = this.jwtService.sign(payload);
